@@ -1,3 +1,5 @@
+CAMBIO SOLAMENTE DE PRUEBA
+
 # Visual Studio
 .vs/
 *.vcxproj.user
@@ -56,3 +58,17 @@ Thumbs.db
 *.bak
 *.tmp
 *.old
+
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.ipch
+*.VC.db*
+*.obj
+*.log
+Debug/
+Release/
+x64/
+
