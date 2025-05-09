@@ -1,41 +1,36 @@
 #include "HUD.h"
 
-// Constructor del HUD
-HUD::HUD() {
-    // Carga la fuente desde el archivo especificado
-    font.loadFromFile("assets/GAME_glm.ttf");
+// Constructor
+HUD::HUD() {}
 
-    // Configuración del texto que muestra la cantidad de disparos
-    shotsText.setFont(font);               // Asigna la fuente al texto
-    shotsText.setCharacterSize(20);         // Tamaño de la fuente
-    shotsText.setPosition(10, 10);          // Posición en la pantalla
+// Inicialización del HUD
+void HUD::initialize(sf::Font& font) {
+    shotsText.setFont(font);
+    shotsText.setCharacterSize(20);
+    shotsText.setPosition(10, 10);
+    shotsText.setFillColor(sf::Color::Yellow);
 
-    // Configuración del texto que muestra el ángulo de disparo
-    angleText.setFont(font);                // Asigna la fuente al texto
-    angleText.setCharacterSize(20);          // Tamaño de la fuente
-    angleText.setPosition(10, 40);           // Posición en la pantalla
+    angleText.setFont(font);
+    angleText.setCharacterSize(20);
+    angleText.setPosition(10, 40);
+    angleText.setFillColor(sf::Color::Yellow);
 
-    // Configuración del texto que muestra la potencia de disparo
-    powerText.setFont(font);                // Asigna la fuente al texto
-    powerText.setCharacterSize(20);          // Tamaño de la fuente
-    powerText.setPosition(10, 70);           // Posición en la pantalla
+    powerText.setFont(font);
+    powerText.setCharacterSize(20);
+    powerText.setPosition(10, 70);
+    powerText.setFillColor(sf::Color::Yellow);
 }
 
-// Actualización de los valores del HUD
-void HUD::update(int shots, float angle, float power) {
-    // Actualiza el texto con la cantidad de disparos
-    shotsText.setString("Disparos: " + std::to_string(shots));
-
-    // Actualiza el texto con el ángulo de disparo (convertido a entero para mejor presentación)
-    angleText.setString("Angulo: " + std::to_string(static_cast<int>(angle)));
-
-    // Actualiza el texto con la potencia de disparo (convertido a entero para mejor presentación)
+// Actualización del HUD con datos actuales
+void HUD::update(int shotCount, float angle, float power) {
+    shotsText.setString("Disparos: " + std::to_string(shotCount));
+    angleText.setString("Ángulo: " + std::to_string(static_cast<int>(angle * 180 / 3.14159f)));
     powerText.setString("Potencia: " + std::to_string(static_cast<int>(power)));
 }
 
-// Dibuja el HUD en la ventana proporcionada
+// Dibujar el HUD en la pantalla
 void HUD::draw(sf::RenderWindow& window) {
-    window.draw(shotsText);   // Dibuja el contador de disparos
-    window.draw(angleText);   // Dibuja el ángulo de disparo
-    window.draw(powerText);   // Dibuja la potencia de disparo
+    window.draw(shotsText);
+    window.draw(angleText);
+    window.draw(powerText);
 }

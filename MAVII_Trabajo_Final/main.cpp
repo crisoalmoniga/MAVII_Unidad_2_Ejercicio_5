@@ -3,6 +3,8 @@
 #include "ParteCuerpo.h"
 #include "Ragdoll.h"
 #include "Cannon.h"
+#include "HUD.h"
+#include "Menu.h"
 #include <list>
 #include <vector>
 #include <memory>
@@ -15,65 +17,14 @@
 enum GameState { MENU, PLAYING };
 GameState state = MENU;
 
-// Variables globales para el menú
-sf::Font font;
-sf::Text title;
-sf::Text startText;
-sf::Text exitText;
-
-// Variables para el HUD (Interfaz gráfica)
-sf::Text shotsText;
-sf::Text angleText;
-sf::Text powerText;
+// Contador global de disparos
 int shotCount = 0;
 
-// Inicialización del menú
-void initializeMenu() {
-    font.loadFromFile("assets/GAME_glm.ttf");
+// Crear el objeto HUD
+HUD hud;
 
-    title.setFont(font);
-    title.setString("TP - Ragdoll Cannon");
-    title.setCharacterSize(60);
-    title.setPosition(100, 100);
-    title.setFillColor(sf::Color::White);
-
-    startText.setFont(font);
-    startText.setString("Presiona ENTER para comenzar");
-    startText.setCharacterSize(30);
-    startText.setPosition(100, 250);
-    startText.setFillColor(sf::Color::White);
-
-    exitText.setFont(font);
-    exitText.setString("Presiona ESC para salir");
-    exitText.setCharacterSize(30);
-    exitText.setPosition(100, 350);
-    exitText.setFillColor(sf::Color::White);
-}
-
-// Inicialización del HUD
-void initializeHUD() {
-    shotsText.setFont(font);
-    shotsText.setCharacterSize(20);
-    shotsText.setPosition(10, 10);
-    shotsText.setFillColor(sf::Color::Yellow);
-
-    angleText.setFont(font);
-    angleText.setCharacterSize(20);
-    angleText.setPosition(10, 40);
-    angleText.setFillColor(sf::Color::Yellow);
-
-    powerText.setFont(font);
-    powerText.setCharacterSize(20);
-    powerText.setPosition(10, 70);
-    powerText.setFillColor(sf::Color::Yellow);
-}
-
-// Actualización del HUD con datos actuales
-void updateHUD(float angle, float power) {
-    shotsText.setString("Disparos: " + std::to_string(shotCount));
-    angleText.setString("Ángulo: " + std::to_string(static_cast<int>(angle * 180 / 3.14159f)));
-    powerText.setString("Potencia: " + std::to_string(static_cast<int>(power)));
-}
+// Crear el objeto Menú
+Menu menu;
 
 int main() {
     // Creación de la ventana principal
@@ -84,9 +35,13 @@ int main() {
     b2Vec2 gravity(0.f, 9.8f);
     b2World world(gravity);
 
-    // Inicialización del menú y el HUD
-    initializeMenu();
-    initializeHUD();
+    // Cargar la fuente
+    sf::Font font;
+    font.loadFromFile("assets/GAME_glm.ttf");
+
+    // Inicializar el HUD y el menú
+    hud.initialize(font);
+    menu.initialize(font);
 
     // Lista que almacena los ragdolls disparados
     std::list<Ragdoll> ragdolls;
@@ -100,23 +55,16 @@ int main() {
     b2Body* ground = world.CreateBody(&groundDef);
 
     b2EdgeShape edge;
-
-    // Piso del mundo
     edge.SetTwoSided(b2Vec2(0, 6), b2Vec2(8, 6));
     ground->CreateFixture(&edge, 0.0f);
-
-    // Techo (parte superior)
     edge.SetTwoSided(b2Vec2(0, 0), b2Vec2(8, 0));
     ground->CreateFixture(&edge, 0.0f);
-
-    // Pared izquierda
     edge.SetTwoSided(b2Vec2(0, 0), b2Vec2(0, 6));
     ground->CreateFixture(&edge, 0.0f);
-
-    // Pared derecha
     edge.SetTwoSided(b2Vec2(8, 0), b2Vec2(8, 6));
     ground->CreateFixture(&edge, 0.0f);
 
+    // Bucle principal del juego
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -125,10 +73,10 @@ int main() {
 
             // Control del menú
             if (state == MENU) {
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                if (menu.isStartPressed()) {
                     state = PLAYING;
                 }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                else if (menu.isExitPressed()) {
                     window.close();
                 }
             }
@@ -142,7 +90,7 @@ int main() {
                 else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
                     ragdolls.emplace_back(world, cannon.getPosition(), cannon.getAngle(), cannon.getPower());
                     shotCount++;
-                    updateHUD(cannon.getAngle(), cannon.getPower());
+                    hud.update(shotCount, cannon.getAngle(), cannon.getPower());
                 }
             }
         }
@@ -153,21 +101,22 @@ int main() {
 
         // Renderizado del menú
         if (state == MENU) {
-            window.draw(title);
-            window.draw(startText);
-            window.draw(exitText);
+            menu.draw(window);
         }
         // Renderizado durante el juego
         else if (state == PLAYING) {
+            // Dibujar el cañón
             cannon.draw(window);
+
+            // Dibujar los ragdolls en pantalla
             for (auto& ragdoll : ragdolls)
                 ragdoll.draw(window);
 
-            window.draw(shotsText);
-            window.draw(angleText);
-            window.draw(powerText);
+            // Dibujar el HUD
+            hud.draw(window);
         }
 
+        // Actualizar la pantalla
         window.display();
     }
 

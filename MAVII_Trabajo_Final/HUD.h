@@ -1,15 +1,19 @@
-#pragma once
+#ifndef HUD_H
+#define HUD_H
+
 #include <SFML/Graphics.hpp>
 
 class HUD {
 public:
     HUD();
-    void update(int shots, float angle, float power);
+    void initialize(sf::Font& font);
+    void update(int shotCount, float angle, float power);
     void draw(sf::RenderWindow& window);
 
 private:
-    sf::Font font;
     sf::Text shotsText;
     sf::Text angleText;
     sf::Text powerText;
 };
+
+#endif
