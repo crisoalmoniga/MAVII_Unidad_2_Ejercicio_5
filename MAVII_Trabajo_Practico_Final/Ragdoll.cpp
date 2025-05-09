@@ -1,44 +1,44 @@
 #include "Ragdoll.h"
 #include <cmath>
 
-#define SCALE 100.0f
+Ragdoll::Ragdoll(b2World& world, sf::Vector2f position, float angle, float potencia) {
+    // Cuerpo principal del ragdoll
+    cabeza = std::make_unique<ParteCuerpo>(world, position.x, position.y - 20, 10, 10);
+    torso = std::make_unique<ParteCuerpo>(world, position.x, position.y, 16.5f, 16.5f);
+    brazoIzq = std::make_unique<ParteCuerpo>(world, position.x - 11, position.y, 10, 3.5f);
+    brazoDer = std::make_unique<ParteCuerpo>(world, position.x + 11, position.y, 10, 3.5f);
+    piernaIzq = std::make_unique<ParteCuerpo>(world, position.x - 3.5f, position.y + 20, 4, 15);
+    piernaDer = std::make_unique<ParteCuerpo>(world, position.x + 3.5f, position.y + 20, 4, 15);
 
-Ragdoll::Ragdoll(b2World& world, sf::Vector2f origen, float anguloCanon, float potencia) {
-
-    cabeza = std::make_unique<ParteCuerpo>(world, origen.x, origen.y - 20, 10, 10);
-    torso = std::make_unique<ParteCuerpo>(world, origen.x, origen.y, 16.5f, 16.5f);
-    brazoIzq = std::make_unique<ParteCuerpo>(world, origen.x - 11, origen.y, 10, 3.5f);
-    brazoDer = std::make_unique<ParteCuerpo>(world, origen.x + 11, origen.y, 10, 3.5f);
-    piernaIzq = std::make_unique<ParteCuerpo>(world, origen.x - 3.5f, origen.y + 20, 4, 15);
-    piernaDer = std::make_unique<ParteCuerpo>(world, origen.x + 3.5f, origen.y + 20, 4, 15);
-
+    // Crear juntas para conectar partes del cuerpo
     b2Vec2 centroTorso = torso->getBody()->GetWorldCenter();
-
-    auto unir = [&](b2Body* a, b2Body* b, b2Vec2 puntoMundo, bool limitado = false) {
+    auto unir = [&](b2Body* a, b2Body* b, b2Vec2 puntoMundo) {
         b2RevoluteJointDef jointDef;
         jointDef.bodyA = a;
         jointDef.bodyB = b;
         jointDef.localAnchorA = a->GetLocalPoint(puntoMundo);
         jointDef.localAnchorB = b->GetLocalPoint(puntoMundo);
         jointDef.collideConnected = false;
-        jointDef.enableLimit = limitado;
-        if (limitado) {
-            jointDef.lowerAngle = -0.5f;
-            jointDef.upperAngle = 0.5f;
-        }
         world.CreateJoint(&jointDef);
         };
 
     unir(cabeza->getBody(), torso->getBody(), centroTorso + b2Vec2(0, -0.1f));
-    unir(brazoIzq->getBody(), torso->getBody(), centroTorso + b2Vec2(-0.1f, 0), true);
-    unir(brazoDer->getBody(), torso->getBody(), centroTorso + b2Vec2(0.1f, 0), true);
+    unir(brazoIzq->getBody(), torso->getBody(), centroTorso + b2Vec2(-0.1f, 0));
+    unir(brazoDer->getBody(), torso->getBody(), centroTorso + b2Vec2(0.1f, 0));
     unir(piernaIzq->getBody(), torso->getBody(), centroTorso + b2Vec2(-0.035f, 0.125f));
     unir(piernaDer->getBody(), torso->getBody(), centroTorso + b2Vec2(0.035f, 0.125f));
-
-    float impulseFactor = potencia * 0.02f;
-    b2Vec2 impulso = impulseFactor * b2Vec2(std::cos(anguloCanon), std::sin(anguloCanon));
-    torso->getBody()->ApplyLinearImpulseToCenter(impulso, true);
 }
+
+void Ragdoll::update() {
+    // Actualiza la posición del ragdoll si es necesario
+    cabeza->update();
+    torso->update();
+    brazoIzq->update();
+    brazoDer->update();
+    piernaIzq->update();
+    piernaDer->update();
+}
+
 
 void Ragdoll::draw(sf::RenderWindow& window) {
     cabeza->draw(window);

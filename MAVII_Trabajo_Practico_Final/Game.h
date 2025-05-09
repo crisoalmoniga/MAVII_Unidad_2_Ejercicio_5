@@ -1,7 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Menu.h"
+#include <box2d/box2d.h>
+#include <vector>
+#include <memory>
+#include "Ragdoll.h"
+#include "Cannon.h"
 #include "Counter.h"
+#include "Menu.h"
+
+enum GameState { MENU, PLAYING };
 
 class Game {
 public:
@@ -13,10 +20,13 @@ private:
     void update();
     void render();
 
-    enum GameState { MENU, PLAYING, GAME_OVER };
-    GameState state;
-
     sf::RenderWindow window;
-    Menu* menu;
-    Counter* counter;
+    GameState state;
+    int contador;
+
+    std::unique_ptr<Cannon> cannon;
+    std::unique_ptr<Counter> counter;
+    std::unique_ptr<Menu> menu;
+    b2World world;
+    std::vector<Ragdoll> ragdolls;
 };

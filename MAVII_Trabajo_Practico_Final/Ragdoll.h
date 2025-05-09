@@ -1,18 +1,20 @@
 #pragma once
-#include "ParteCuerpo.h"
 #include <SFML/Graphics.hpp>
+#include <box2d/box2d.h>
 #include <memory>
+#include "ParteCuerpo.h"
 
 class Ragdoll {
 public:
-    Ragdoll(b2World& world, sf::Vector2f origen, float anguloCanon, float potencia);
+    Ragdoll(b2World& world, sf::Vector2f position, float angle, float potencia);
+    void update();
     void draw(sf::RenderWindow& window);
 
 private:
-    std::unique_ptr<ParteCuerpo> cabeza;
+    std::unique_ptr<ParteCuerpo> head;
     std::unique_ptr<ParteCuerpo> torso;
-    std::unique_ptr<ParteCuerpo> brazoIzq;
-    std::unique_ptr<ParteCuerpo> brazoDer;
-    std::unique_ptr<ParteCuerpo> piernaIzq;
-    std::unique_ptr<ParteCuerpo> piernaDer;
+    std::unique_ptr<ParteCuerpo> leftArm;
+    std::unique_ptr<ParteCuerpo> rightArm;
+    std::unique_ptr<ParteCuerpo> leftLeg;
+    std::unique_ptr<ParteCuerpo> rightLeg;
 };
