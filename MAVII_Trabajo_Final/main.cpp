@@ -102,6 +102,18 @@ int main() {
     edge.SetTwoSided(b2Vec2(0, 6), b2Vec2(8, 6));
     ground->CreateFixture(&edge, 0.0f);
 
+    // Techo (parte superior)
+    edge.SetTwoSided(b2Vec2(0, 0), b2Vec2(8, 0));
+    ground->CreateFixture(&edge, 0.0f);
+
+    // Pared izquierda
+    edge.SetTwoSided(b2Vec2(0, 0), b2Vec2(0, 6));
+    ground->CreateFixture(&edge, 0.0f);
+
+    // Pared derecha
+    edge.SetTwoSided(b2Vec2(8, 0), b2Vec2(8, 6));
+    ground->CreateFixture(&edge, 0.0f);
+
     // Lista que almacena los ragdolls disparados
     std::list<Ragdoll> ragdolls;
 
