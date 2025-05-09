@@ -1,6 +1,13 @@
 #include "Game.h"
 #include "Box2DHelper.h"
 #include <iostream>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <iostream>
+
 
 // Constructor de la clase Game
 Game::Game(int ancho, int alto, std::string titulo)

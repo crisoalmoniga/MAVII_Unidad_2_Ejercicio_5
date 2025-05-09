@@ -1,4 +1,7 @@
 #include "SFMLRenderer.h"
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
 
 // Constructor de la clase SFMLRenderer
 SFMLRenderer::SFMLRenderer(RenderWindow* window)
