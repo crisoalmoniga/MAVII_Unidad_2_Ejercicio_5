@@ -44,10 +44,3 @@ sf::Vector2f ParteCuerpo::getPosition() const {
     b2Vec2 pos = body->GetPosition();
     return sf::Vector2f(pos.x * SCALE, pos.y * SCALE);
 }
-
-void ParteCuerpo::update() {
-    b2Vec2 position = body->GetPosition();
-    float angle = body->GetAngle();
-    rect.setPosition(position.x * SCALE, position.y * SCALE);
-    rect.setRotation(angle * 180 / 3.14159f);
-}

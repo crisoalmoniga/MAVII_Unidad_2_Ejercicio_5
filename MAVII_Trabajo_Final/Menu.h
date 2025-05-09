@@ -3,13 +3,14 @@
 
 class Menu {
 public:
-    Menu(sf::RenderWindow& window);
+    Menu();
     void draw(sf::RenderWindow& window);
     bool isStartPressed() const;
+    bool isExitPressed() const;
 
 private:
     sf::Font font;
     sf::Text title;
     sf::Text startText;
-    bool startPressed;
+    sf::Text exitText;
 };
