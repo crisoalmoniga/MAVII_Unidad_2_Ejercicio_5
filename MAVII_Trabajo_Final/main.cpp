@@ -5,6 +5,7 @@
 #include "Cannon.h"
 #include "HUD.h"
 #include "Menu.h"
+#include "BoxWall.h"
 #include <list>
 #include <vector>
 #include <memory>
@@ -49,6 +50,9 @@ int main() {
     // Crear el objeto cañón
     Cannon cannon(sf::Vector2f(100.f, 500.f));
 
+    // Crear la pared de cajas
+    BoxWall boxWall(world, 5, 3, 600.f, 500.f); // 5 filas, 3 columnas
+
     // Definición del piso y límites del mundo
     b2BodyDef groundDef;
     groundDef.position.Set(0.f, 0.f);
@@ -92,6 +96,14 @@ int main() {
                     shotCount++;
                     hud.update(shotCount, cannon.getAngle(), cannon.getPower());
                 }
+
+                // Verificar si el nivel está completo (todas las cajas caídas)
+                if (boxWall.isCleared()) {
+                    state = MENU;
+                    menu.setTitle("¡Nivel Completado!");
+                    menu.setStartText("Presiona ENTER para el siguiente nivel");
+                }
+
             }
         }
 
@@ -111,6 +123,9 @@ int main() {
             // Dibujar los ragdolls en pantalla
             for (auto& ragdoll : ragdolls)
                 ragdoll.draw(window);
+
+            // Dibujar la pared de cajas
+            boxWall.draw(window);
 
             // Dibujar el HUD
             hud.draw(window);

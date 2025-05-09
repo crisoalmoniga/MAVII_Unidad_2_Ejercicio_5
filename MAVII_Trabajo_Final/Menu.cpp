@@ -43,3 +43,11 @@ bool Menu::isStartPressed() const {
 bool Menu::isExitPressed() const {
     return sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
 }
+
+void Menu::setTitle(const std::string& newTitle) {
+    title.setString(newTitle);
+}
+
+void Menu::setStartText(const std::string& newText) {
+    startText.setString(newText);
+}

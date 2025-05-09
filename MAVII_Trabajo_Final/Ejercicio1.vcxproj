@@ -156,6 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BoxWall.cpp" />
     <ClCompile Include="Cannon.cpp" />
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="main.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Ragdoll.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoxWall.h" />
     <ClInclude Include="Cannon.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Menu.h" />

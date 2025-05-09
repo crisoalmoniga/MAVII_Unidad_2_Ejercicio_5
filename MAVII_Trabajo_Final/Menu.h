@@ -10,6 +10,9 @@ public:
     void draw(sf::RenderWindow& window);
     bool isStartPressed() const;
     bool isExitPressed() const;
+    void setTitle(const std::string& newTitle);
+    void setStartText(const std::string& newText);
+
 
 private:
     sf::Text title;
