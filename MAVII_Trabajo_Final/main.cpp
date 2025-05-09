@@ -128,6 +128,86 @@ int main() {
     shotLine[0].color = sf::Color::Red;
     shotLine[1].color = sf::Color::Red;
 
+    // Plataforma oscilante (balanza)
+    b2Body* pivot;    // Pivote central
+    b2Body* platform; // Plataforma móvil
+
+    // Crear el pivote estático en el centro de la pantalla
+    b2BodyDef pivotDef;
+    pivotDef.position.Set(4.0f, 3.0f); // Posición centrada en la pantalla
+    pivot = world.CreateBody(&pivotDef);
+
+    // Forma del pivote (punto pequeño)
+    b2CircleShape pivotShape;
+    pivotShape.m_radius = 0.1f;
+
+    // Fixture del pivote
+    b2FixtureDef pivotFixture;
+    pivotFixture.shape = &pivotShape;
+    pivotFixture.density = 1.0f;
+    pivot->CreateFixture(&pivotFixture);
+
+    // Crear la plataforma dinámica
+    b2BodyDef platformDef;
+    platformDef.type = b2_dynamicBody;
+    platformDef.position.Set(4.0f, 3.0f); // Mismo punto que el pivote
+    platform = world.CreateBody(&platformDef);
+
+    // Forma de la plataforma (barra horizontal)
+    b2PolygonShape platformShape;
+    platformShape.SetAsBox(2.0f, 0.1f); // Ancho y altura de la barra
+
+    // Fixture de la plataforma
+    b2FixtureDef platformFixture;
+    platformFixture.shape = &platformShape;
+    platformFixture.density = 2.0f;    // Suficiente peso para oscilar
+    platformFixture.friction = 0.5f;
+    platform->CreateFixture(&platformFixture);
+
+    // Crear el Revolute Joint para permitir la oscilación
+    b2RevoluteJointDef jointDef;
+    jointDef.bodyA = pivot;
+    jointDef.bodyB = platform;
+    jointDef.localAnchorA.Set(0.0f, 0.0f); // Centro del pivote
+    jointDef.localAnchorB.Set(0.0f, 0.0f); // Centro de la plataforma
+    jointDef.collideConnected = false;     // Sin colisión entre pivot y plataforma
+
+    // Limitar el ángulo de oscilación
+    jointDef.enableLimit = true;
+    jointDef.lowerAngle = -0.25f * b2_pi;  // Ángulo mínimo (en radianes)
+    jointDef.upperAngle = 0.25f * b2_pi;   // Ángulo máximo (en radianes)
+
+    // Crear el joint en el mundo físico
+    world.CreateJoint(&jointDef);
+
+    // Representación visual de la plataforma en SFML
+    sf::RectangleShape platformVisual(sf::Vector2f(400, 20));
+    platformVisual.setOrigin(200, 10);        // Centro de rotación
+    platformVisual.setFillColor(sf::Color(139, 69, 19)); // Color madera
+
+    // Crear la carga sobre la plataforma (bloque pequeño)
+    b2Body* carga;
+    b2BodyDef cargaDef;
+    cargaDef.type = b2_dynamicBody;
+    cargaDef.position.Set(4.0f, 2.8f); // Posición sobre la plataforma
+    carga = world.CreateBody(&cargaDef);
+
+    b2PolygonShape cargaShape;
+    cargaShape.SetAsBox(0.2f, 0.2f); // Tamaño del bloque
+
+    b2FixtureDef cargaFixture;
+    cargaFixture.shape = &cargaShape;
+    cargaFixture.density = 1.0f;
+    cargaFixture.friction = 0.3f;
+    carga->CreateFixture(&cargaFixture);
+
+    // Visualización de la carga en SFML
+    sf::RectangleShape cargaVisual(sf::Vector2f(40, 40));
+    cargaVisual.setOrigin(20, 20);
+    cargaVisual.setFillColor(sf::Color::Red);
+
+
+
     // Bucle principal del juego
     while (window.isOpen()) {
         sf::Event event;
@@ -159,6 +239,14 @@ int main() {
                     shotCount++;
                     updateHUD(cannonAngle, currentPower);
                 }
+                // Verificar si la carga toca el suelo (nivel completado)
+                b2Vec2 cargaPos = carga->GetPosition();
+                if (cargaPos.y * SCALE >= 600) {
+                    state = MENU;
+                    title.setString("¡Nivel Completado!");
+                    startText.setString("Presiona ENTER para el siguiente nivel");
+                }
+
             }
         }
 
@@ -187,6 +275,16 @@ int main() {
             window.draw(angleText);
             window.draw(powerText);
         }
+
+        // Actualizar posición y rotación de la plataforma visual
+        b2Vec2 platformPos = platform->GetPosition();
+        float platformAngle = platform->GetAngle();
+        platformVisual.setPosition(platformPos.x * SCALE, platformPos.y * SCALE);
+        platformVisual.setRotation(platformAngle * 180 / b2_pi);
+
+        // Dibujar la plataforma oscilante en la ventana
+        window.draw(platformVisual);
+
 
         // Actualiza la pantalla
         window.display();
